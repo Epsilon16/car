@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class Car_Controller : MonoBehaviour
 {
@@ -21,11 +22,22 @@ public class Car_Controller : MonoBehaviour
 
     public float WheelAngleMax = 5f;
 
+    public int lose = 0;
     public bool freinage = false;
+
+    private GameObject GameOver;
+    public Text gameOvertext;
+    private GameObject Win;
+    public Text WinText;
+    private bool ded = false;
+    public float timewin;
+    
     // Start is called before the first frame update
     void Start()
     {
         GetComponent<Rigidbody>().centerOfMass = new Vector3(0f, -0.9f, -0.4f);
+        GameOver = gameOvertext.gameObject;
+        Win = WinText.gameObject;
     }
 
     // Update is called once per frame
@@ -89,6 +101,32 @@ public class Car_Controller : MonoBehaviour
             back_right.brakeTorque = 0;
             back_left.motorTorque = Input.GetAxis("Vertical") * Torque * CoefAccelerator * Time.deltaTime;
             back_right.motorTorque = Input.GetAxis("Vertical") * Torque * CoefAccelerator * Time.deltaTime;
+        }
+
+        
+    }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("CarDestroy"))
+        {
+            Destroy(collision.gameObject);
+            lose = lose + 1;
+            if (lose == 3)
+            {
+                Destroy(gameObject);
+                GameOver.SetActive(true);
+                
+            }
+        }
+        
+
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("FInish"))
+        {
+            Destroy(gameObject);
+            Win.SetActive(true);
         }
     }
 }
